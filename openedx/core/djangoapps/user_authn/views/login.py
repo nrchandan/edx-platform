@@ -71,20 +71,17 @@ def _do_third_party_auth(request):
             u"with backend_name {backend_name}".format(
                 username=username, backend_name=backend_name)
         )
-        message = Text(_(
+        message = _(
             u"You've successfully signed in to your {provider_name} account, "
-            u"but this account isn't linked with your {platform_name} account yet. {blank_lines}"
+            u"but this account isn't linked with your {platform_name} account yet."
             u"Use your {platform_name} username and password to sign in to {platform_name} below, "
-            u"and then link your {platform_name} account with {provider_name} from your dashboard. {blank_lines}"
+            u"and then link your {platform_name} account with {provider_name} from your dashboard."
             u"If you don't have an account on {platform_name} yet, "
             u"click {register_label_strong} at the top of the page."
-        )).format(
-            blank_lines=HTML('<br/><br/>'),
+        ).format(
             platform_name=platform_name,
             provider_name=requested_provider.name,
-            register_label_strong=HTML('<strong>{register_text}</strong>').format(
-                register_text=_('Register')
-            )
+            register_label_strong='Register'
         )
 
         raise AuthFailedError(message)
@@ -143,7 +140,7 @@ def _enforce_password_policy_compliance(request, user):
         raise AuthFailedError(HTML(six.text_type(e)))
 
 
-def _generate_not_activated_message(user):
+def _generate_not_activated_payload(user):
     """
     Generates the message displayed on the sign-in screen when a learner attempts to access the
     system with an inactive account.
@@ -158,22 +155,12 @@ def _generate_not_activated_message(user):
         'PLATFORM_NAME',
         settings.PLATFORM_NAME
     )
-    not_activated_message = Text(_(
-        u'In order to sign in, you need to activate your account.{blank_lines}'
-        u'We just sent an activation link to {email_strong}. If '
-        u'you do not receive an email, check your spam folders or '
-        u'{link_start}contact {platform_name} Support{link_end}.'
-    )).format(
-        platform_name=platform_name,
-        blank_lines=HTML('<br/><br/>'),
-        email_strong=HTML('<strong>{email}</strong>').format(email=user.email),
-        link_start=HTML(u'<a href="{support_url}">').format(
-            support_url=support_url,
-        ),
-        link_end=HTML("</a>"),
-    )
 
-    return not_activated_message
+    return {
+        'platform_name': platform_name,
+        'email': user.email,
+        'support_url': support_url
+    }
 
 
 def _log_and_raise_inactive_user_auth_error(unauthenticated_user):
@@ -194,7 +181,7 @@ def _log_and_raise_inactive_user_auth_error(unauthenticated_user):
     profile = UserProfile.objects.get(user=unauthenticated_user)
     compose_and_send_activation_email(unauthenticated_user, profile)
 
-    raise AuthFailedError(_generate_not_activated_message(unauthenticated_user))
+    raise AuthFailedError(payload=_generate_not_activated_payload(unauthenticated_user), error_code='unactivated-user')
 
 
 def _authenticate_first_party(request, unauthenticated_user, third_party_auth_requested):
@@ -357,7 +344,7 @@ def _check_user_auth_flow(site, user):
 
 @login_required
 @require_http_methods(['GET'])
-def finish_auth(request):  # pylint: disable=unused-argument
+def finish_auth(request):
     """ Following logistration (1st or 3rd party), handle any special query string params.
 
     See FinishAuthView.js for details on the query string params.
