@@ -1,14 +1,16 @@
+"""
+Tests for SAMLConfiguration endpoints
+"""
+
 import unittest
-from third_party_auth.models import SAMLConfiguration
 from django.urls import reverse
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
 
-from enterprise.constants import ENTERPRISE_ADMIN_ROLE, ENTERPRISE_LEARNER_ROLE
 from rest_framework import status
 from rest_framework.test import APITestCase
+from third_party_auth.models import SAMLConfiguration
 from third_party_auth.tests import testutil
-from third_party_auth.tests.samlutils import set_jwt_cookie
 
 SAML_CONFIGURATIONS = [
     {
@@ -76,6 +78,7 @@ class SAMLConfigurationTests(APITestCase):
             )
 
     def setUp(self):
+        super(SAMLConfigurationTests, self).setUp()
         self.client.login(username=self.user.username, password=TEST_PASSWORD)
 
     def test_get_saml_configurations_successful(self):
