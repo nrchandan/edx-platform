@@ -21,14 +21,19 @@ class Command(BaseCommand):
 
     # Change entitlement_mode for given user_id with order_number to new_mode:
     $ ./manage.py lms --settings=devstack_docker update_entitlement_mode \
-    1:ORDER_NUMBER_123,2:ORDER_NUMBER_456 verified
+    ORDER_NUMBER_123,ORDER_NUMBER_456 course_uuid verified
     """
     help = dedent(__doc__).strip()
 
     def add_arguments(self, parser):
         parser.add_argument(
-            'user_ids_with_order_number',
-            help='User id of entitlement'
+            'order_numbers',
+            help='Order number of entitlement'
+        )
+
+        parser.add_argument(
+            'course_uuid',
+            help='UUID of course'
         )
 
         parser.add_argument(
@@ -39,14 +44,18 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         logger.info('Updating entitlement_mode for provided Entitlements.')
 
-        users_id_and_order_number = options['user_ids_with_order_number']
+        order_numbers = options['order_numbers']
+        course_uuid = options['course_uuid']
         entitlement_mode = options['entitlement_mode']
 
-        for user_id_and_order_number in users_id_and_order_number.split(','):
-            CourseEntitlement.objects.update_or_create(
-                user_id=user_id_and_order_number.split(':')[0],
-                order_number=user_id_and_order_number.split(':')[1],
-                defaults={'mode': entitlement_mode},
+        for order_number in order_numbers.split(','):
+            entitlement_to_update = CourseEntitlement.objects.get(
+                course_uuid=course_uuid,
+                order_number=order_number,
             )
+            entitlement_to_update.mode = entitlement_mode
+            entitlement_to_update.save()
+            logger.info('entitlement_mode updated to {} for '
+                        'order_number {} for course with UUID {}'.format(entitlement_mode, order_number, course_uuid))
 
-        logger.info('entitlement_mode successfully updated for Entitlements.')
+        logger.info('Successfully updated entitlement_mode for Entitlements.')
