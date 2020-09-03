@@ -345,6 +345,7 @@ EDXNOTES_CLIENT_NAME = 'edx_notes_api-backend-service'
 ############## Settings for Microfrontends  #########################
 LEARNING_MICROFRONTEND_URL = 'http://localhost:2000'
 ACCOUNT_MICROFRONTEND_URL = 'http://localhost:1997'
+LOGISTRATION_MICROFRONTEND_URL = ACCOUNT_MICROFRONTEND_URL
 
 ############## Docker based devstack settings #######################
 
@@ -358,6 +359,8 @@ FEATURES.update({
     # more background on edx-enterprise.
     # Toggle this off if you don't want anything to do with enterprise in devstack.
     'ENABLE_ENTERPRISE_INTEGRATION': True,
+    # Toggle this on if you want to redirect locally to new logistration MFE
+    'ENABLE_LOGIN_MICROFRONTEND': False
 })
 
 ENABLE_MKTG_SITE = os.environ.get('ENABLE_MARKETING_SITE', False)
