@@ -17,8 +17,7 @@ SAML_CONFIGURATIONS = [
         'private_key': 'TestingKey',
         'public_key': 'TestingKey',
         'entity_id': 'example.com',
-        'is_public': True
-
+        'is_public': True,
     },
     {
         'site': 2,
@@ -43,6 +42,7 @@ PRIV_CONFIGURATIONS = [
 ]
 
 TEST_PASSWORD = 'testpwd'
+
 
 @unittest.skipUnless(testutil.AUTH_FEATURE_ENABLED, testutil.AUTH_FEATURES_KEY + ' not enabled')
 class SAMLConfigurationTests(APITestCase):
@@ -75,7 +75,6 @@ class SAMLConfigurationTests(APITestCase):
                 is_public=config['is_public']
             )
 
-
     def setUp(self):
         self.client.login(username=self.user.username, password=TEST_PASSWORD)
 
@@ -104,9 +103,8 @@ class SAMLConfigurationTests(APITestCase):
         results = response.data['results']
         self.assertEqual(len(results), 2)
 
-
     def test_unauthenticated_user_get_saml_configurations(self):
         self.client.logout()
         url = reverse('saml_configuration-list')
         response = self.client.get(url, format='json')
-        assert response.status_code == 401
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

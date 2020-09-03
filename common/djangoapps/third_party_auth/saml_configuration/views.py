@@ -15,7 +15,6 @@ from third_party_auth.utils import validate_uuid4_string
 
 from ..models import SAMLConfiguration
 from .serializers import SAMLConfigurationSerializer
-from ..utils import convert_saml_slug_provider_id
 
 
 class SAMLConfigurationMixin(object):
@@ -37,5 +36,3 @@ class SAMLConfigurationViewSet(SAMLConfigurationMixin, viewsets.ModelViewSet):
         Find and return all saml configurations that are listed as public.
         """
         return SAMLConfiguration.objects.current_set().filter(is_public=True)
-
-
