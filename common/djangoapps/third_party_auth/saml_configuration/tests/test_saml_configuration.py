@@ -38,8 +38,7 @@ PRIV_CONFIGURATIONS = [
         'private_key': 'TestingKey',
         'public_key': 'TestingKey',
         'entity_id': 'example.com',
-        'is_public': False
-
+        'is_public': False,
     },
 ]
 
