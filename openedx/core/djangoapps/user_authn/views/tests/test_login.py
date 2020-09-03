@@ -149,11 +149,9 @@ class LoginTest(SiteMixin, CacheIsolationTestCase):
     @skip_unless_lms
     def test_login_success_with_redirect(self, next_url, course_id, expected_redirect):
         site_domain = 'example.org'
-        self.set_up_site(site_domain, {
-            'SITE_NAME': site_domain,
-            'ENABLE_ACCOUNT_MICROFRONTEND': True
-        })
+        self.set_up_site(site_domain, {'ENABLE_ACCOUNT_MICROFRONTEND': True})
         post_params = {}
+
         if next_url:
             post_params['next'] = next_url
         if course_id:

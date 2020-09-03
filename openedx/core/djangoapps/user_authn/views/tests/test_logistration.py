@@ -115,6 +115,10 @@ class LoginAndRegistrationTest(ThirdPartyAuthTestMixin, UrlResetMixin, ModuleSto
     @ddt.unpack
     @override_settings(FEATURES=FEATURES_WITH_LOGIN_MFE_ENABLED)
     def test_logistration_redirect_params(self, url_name, path, query_params):
+        """
+        Test that if request is redirected to logistration MFE,
+        query params are passed to the redirect url.
+        """
         site_domain = 'example.org'
         expected_url = settings.LOGISTRATION_MICROFRONTEND_URL + path + '?' + urlencode(query_params)
 
